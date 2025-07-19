@@ -1,4 +1,3 @@
-import React from 'react'
 export const Hero = () => {
   return (
     <section className="w-full bg-gradient-to-b from-white to-gray-50 py-24 md:py-32">

@@ -1,5 +1,3 @@
-import React from 'react'
-import { ArrowRight } from 'lucide-react'
 export const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white py-12 w-full">

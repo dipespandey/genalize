@@ -1,4 +1,3 @@
-import React from 'react'
 import { MessageSquare, Lightbulb, Code2, CheckCircle } from 'lucide-react'
 export const Process = () => {
   const steps = [

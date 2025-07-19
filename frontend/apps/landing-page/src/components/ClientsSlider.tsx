@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 export const ClientsSlider = () => {
   const scrollRef = useRef<HTMLDivElement>(null)
   // Client logos - using placeholder URLs that should be replaced with actual client logos

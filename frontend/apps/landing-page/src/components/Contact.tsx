@@ -1,5 +1,4 @@
-import React from 'react'
-import { Mail, MessageSquare, Clock, Check, ArrowRight } from 'lucide-react'
+import { Mail, MessageSquare, ArrowRight } from 'lucide-react'
 export const Contact = () => {
   return (
     <section

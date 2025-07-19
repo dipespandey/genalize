@@ -1,5 +1,4 @@
-import React from 'react'
-import { Brain, Code, Database, LineChart, Zap, Shield } from 'lucide-react'
+import { Brain, Code, Database, LineChart, Zap } from 'lucide-react'
 
 export const Services = () => {
   const services = [
