@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+  # Django Backend
+  backend:
+    build: ./backend
+    restart: always
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    expose:
+      - 8000
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    networks:
+      - genalize-network
+
+  # Portal Frontend (React)
+  portal-frontend:
+    build: ./frontend/apps/portal
+    restart: always
+    expose:
+      - 80
+    environment:
+      - REACT_APP_API_URL=http://localhost/api
+      - REACT_APP_WS_URL=ws://localhost/ws
+    networks:
+      - genalize-network
+
+  # Marketing Site Frontend (React)
+  marketing-frontend:
+    build: ./frontend/apps/marketing-site
+    restart: always
+    expose:
+      - 80
+    environment:
+      - REACT_APP_API_URL=http://localhost/api
+    networks:
+      - genalize-network
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=genalize_db
+      - POSTGRES_USER=genalize_user
+      - POSTGRES_PASSWORD=maalhohaami
+    networks:
+      - genalize-network
+
+  # Redis (for caching and Celery)
+  redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis_data:/data
+    networks:
+      - genalize-network
+
+  # Celery Worker
+  celery:
+    build: ./backend
+    restart: always
+    command: uv run celery -A genalize worker --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    networks:
+      - genalize-network
+
+  # Celery Beat (Scheduler)
+  celery-beat:
+    build: ./backend
+    restart: always
+    command: uv run celery -A genalize beat --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    networks:
+      - genalize-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    build: ./nginx
+    restart: always
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+      - ./nginx/ssl:/etc/nginx/ssl
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+      - portal-frontend
+      - marketing-frontend
+    networks:
+      - genalize-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  static_volume:
+  media_volume:
+
+networks:
+  genalize-network:
+    driver: bridge 
