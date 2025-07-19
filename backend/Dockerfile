@@ -1,44 +1,39 @@
-# Use Python 3.12 slim image
-FROM python:3.12-slim
-
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
+# ── Stage 1: common base ───────────────────────────
+FROM python:3.12-slim-bookworm AS base
 ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=/app
-
-# Set work directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        build-essential \
-        libpq-dev \
-        curl \
-    && rm -rf /var/lib/apt/lists/*
+# ── Stage 2: build / dependency layer ──────────────
+FROM base AS builder
 
-# Install uv
-RUN pip install uv
+# Pull the uv binary (faster + smaller than pip install)
+COPY --from=ghcr.io/astral-sh/uv:0.4.9 /uv /bin/uv
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 
-# Copy uv configuration files
-COPY pyproject.toml uv.lock ./
+WORKDIR /app
+# copy lock + project metadata first for Docker-layer caching
+COPY backend/pyproject.toml backend/uv.lock* ./ 
 
-# Install Python dependencies using uv
-RUN uv sync --frozen
+# install deps only (no project code yet) and cache them
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-install-project --no-dev
 
-# Copy project
-COPY . .
+# now add the source code and install *it*
+COPY backend/ .
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
 
-# Collect static files
-RUN uv run python manage.py collectstatic --noinput
+# collect static files
+RUN python manage.py collectstatic --noinput
 
-# Create non-root user
-RUN adduser --disabled-password --gecos '' appuser
-RUN chown -R appuser:appuser /app
-USER appuser
+# ── Stage 3: tiny runtime image ─────────────────────
+FROM base
+COPY --from=builder /app /app
+ENV PATH="/app/.venv/bin:$PATH"
+WORKDIR /app
 
-# Expose port
 EXPOSE 8000
+CMD ["gunicorn", "genalize.wsgi:application", "-b", "0.0.0.0:8000"]
 
 # Run gunicorn
 CMD ["uv", "run", "gunicorn", "genalize.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120"] 
