@@ -30,9 +30,9 @@ services:
     networks:
       - genalize-network
 
-  # Marketing Site Frontend (React)
-  marketing-frontend:
-    build: ./frontend/apps/marketing-site
+  # Landing Page Frontend (React)
+  landing-page-frontend:
+    build: ./frontend/apps/landing-page
     restart: always
     expose:
       - 80
@@ -111,7 +111,7 @@ services:
     depends_on:
       - backend
       - portal-frontend
-      - marketing-frontend
+      - landing-page-frontend
     networks:
       - genalize-network
 

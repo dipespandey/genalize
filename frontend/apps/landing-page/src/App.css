@@ -1,0 +1,94 @@
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+/* Gradient text effect */
+.gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, #0259cf, #00b3bd);
+}
+
+/* Button styles */
+.gradient-button {
+  background-image: linear-gradient(to right, #0259cf, #00b3bd);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gradient-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Card hover effects */
+.feature-card {
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Testimonial card styles */
+.testimonial-card {
+  transition: all 0.3s ease;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Blog card styles */
+.blog-card img {
+  transition: transform 0.3s ease;
+}
+
+.blog-card:hover img {
+  transform: scale(1.05);
+}
+
+.blog-card:hover h3 {
+  color: #3b82f6;
+}
+
+/* FAQ accordion styles */
+.faq-item {
+  border-bottom: 1px solid rgba(75, 85, 99, 0.2);
+  padding: 1.5rem 0;
+}
+
+.faq-question {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  font-weight: 500;
+  color: white;
+}
+
+.faq-answer {
+  margin-top: 0.75rem;
+  color: rgba(156, 163, 175, 1);
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
